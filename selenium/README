@@ -1,0 +1,11 @@
+## 環境構築
+
+```
+gem install selenium-webdriver
+gem install roo
+gem install pry-byebug
+brew install chromedriver
+```
+
+## 設定について
+`constant.rb`にファイルへのパス等設定して下さい。
