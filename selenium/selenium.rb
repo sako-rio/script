@@ -18,7 +18,10 @@ end
 excelx = Excelx.new()
 order_information = excelx.purse()
 
-timer(order_information['開始時間']) do
-  chrome = Chrome.new()
-  chrome.start(order_information)
-end
+# timer(order_information['開始時間']) do
+#   chrome = Chrome.new()
+#   chrome.start(order_information)
+# end
+
+chrome = Chrome.new()
+chrome.start(order_information)

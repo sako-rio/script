@@ -2,6 +2,11 @@ class Chrome
   require 'selenium-webdriver'
 
   def start(order_information)
+     def end_selenium(msg)
+      puts msg
+      loop do
+      end
+     end
     begin
       #  アクセス処理
       driver = Selenium::WebDriver.for :chrome
@@ -95,11 +100,9 @@ class Chrome
       driver.find_element(:id => 'cart-footer').find_element(:name => 'commit').click
 
       sleep 5
-      driver.quit
+      end_selenium('BOT処理終了。購入手続きを手動で続けて下さい。')
     rescue
-      puts "システムエラー　この先の処理は手動で行って下さい"
-      loop do
-      end
+      end_selenium('システムエラー　この先の処理は手動で行って下さい。')
     end
   end
 end
