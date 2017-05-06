@@ -2,12 +2,12 @@ class Firefox
   require 'capybara'
   require 'capybara/dsl'
   require 'selenium-webdriver'
+  include Capybara::DSL
 
   def start()
     Capybara.current_driver = :selenium
     Capybara.app_host = "https://affiliate.amazon.co.jp/"
     Capybara.default_wait_time = 5
-    include Capybara::DSL
 
     visit('')
     # module Crawler

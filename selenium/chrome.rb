@@ -1,5 +1,4 @@
 class Chrome
-  require 'selenium-webdriver'
 
   def start(order_information)
      def end_selenium(msg)
@@ -10,7 +9,6 @@ class Chrome
     begin
       #  アクセス処理
       driver = Selenium::WebDriver.for :chrome
-      wait = Selenium::WebDriver::Wait.new(timeout: 5)
       driver.manage.timeouts.implicit_wait = 1
       driver.navigate.to $URL
       container = driver.find_element(:id => 'container')
