@@ -20,14 +20,13 @@ end
 excelx = Excelx.new()
 order_information = excelx.purse()
 if order_information['ブラウザ'] == 'firefox'
-  firefox = Firefox.new()
-  firefox.start()
+  timer(order_information['開始時間']) do
+    firefox = Firefox.new()
+    firefox.start()
+  end
 else
-  chrome = Chrome.new()
-  chrome.start(order_information)
+  timer(order_information['開始時間']) do
+    chrome = Chrome.new()
+    chrome.start(order_information)
+  end
 end
-
-# timer(order_information['開始時間']) do
-#   chrome = Chrome.new()
-#   chrome.start(order_information)
-# end

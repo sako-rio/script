@@ -6,5 +6,11 @@ require './chrome.rb'
 
 excelx = Excelx.new()
 order_information = excelx.purse()
-chrome = Chrome.new()
-chrome.start(order_information)
+
+if order_information['ブラウザ'] == 'firefox'
+  firefox = Firefox.new()
+  firefox.start()
+else
+  chrome = Chrome.new()
+  chrome.start(order_information)
+end
