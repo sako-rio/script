@@ -26,7 +26,8 @@ if order_information['ブラウザ'] == 'firefox'
   end
 else
   timer(order_information['開始時間']) do
+    driver = Selenium::WebDriver.for :chrome
     chrome = Chrome.new()
-    chrome.start(order_information)
+    chrome.start(order_information, driver)
   end
 end

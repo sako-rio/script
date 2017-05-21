@@ -1,18 +1,38 @@
 class Chrome
+  def get_button(wait, driver, id)
+    button = wait.until { driver.find_element(id: id) }
+    if button.nil?
+      button = false
+    end
+    button
+  end
+
+  #  商品選択処理
+  def click_item(articles, order_information)
+    img = true
+    articles.each_with_index do |article, i|
+      img = article.find_element(:class => 'inner-article').find_element(:tag_name => 'a').find_element(:tag_name => 'img')
+      img_name = img.attribute('alt')
+      if img_name == order_information['画像名']
+        img.click
+        break
+      end
+      img = false
+    end
+    return img
+  end
 
   def access_website(driver)
-    driver.manage.timeouts.implicit_wait = 600
+    driver.manage.timeouts.implicit_wait = 1000
     driver.navigate.to $URL
   end
 
-  def start(order_information)
+  def start(order_information, driver)
      def end_selenium(msg)
       puts msg
       loop do
       end
      end
-
-    driver = Selenium::WebDriver.for :chrome
 
     #  リトライ
     begin
@@ -20,30 +40,98 @@ class Chrome
     rescue
       access_website(driver)
     end
-    driver.manage.timeouts.implicit_wait = 5
+    driver.manage.timeouts.implicit_wait = 1
 
     begin
-      container = driver.find_element(:id => 'container')
-      articles = container.find_elements(:tag_name => 'article')
-      target_item = ''
-      articles.each_with_index do |article, i|
-        img = article.find_element(:class => 'inner-article').find_element(:tag_name => 'a').find_element(:tag_name => 'img')
-        img_name = img.attribute("alt")
-        if img_name == order_information['画像名']
-          target_item = img
+      wait = Selenium::WebDriver::Wait.new(:timeout => 1000)
+      container = nil
+
+      #  購入ページ取得
+      begin
+        container = wait.until { driver.find_element(:id => 'container') }
+      rescue
+        execution_process = false
+        loop do
+          access_website(driver)
+          loop do
+            container = wait.until { driver.find_element(:id => 'container') }
+            execution_process = true unless container.nil?
+            break
+          end
           break
         end
       end
-      target_item.click
 
-      # sleep 1
-      driver.find_element(:id => 'add-remove-buttons').find_element(:name => 'commit').click
+      articles = wait.until { container.find_elements(tag_name: 'article') }
+      if articles.empty?
+        execution_process = false
+        loop do
+          articles = wait.until { container.find_elements(tag_name: 'article') }
+          break unless articles.empty?
+        end
+      end
 
-      # sleep 1
-      driver.find_element(:id => 'cart').find_element(:class => 'checkout').click
+      unless click_item(articles, order_information)
+        loop do
+          break unless click_item(articles, order_information)
+        end
+      end
 
-      # sleep 1
-      cart_body = driver.find_element(:id => 'cart-body')
+      button = get_button(wait, driver, 'add-remove-buttons')
+      unless button.nil?
+        loop do
+          button = get_button(wait, driver, 'add-remove-buttons')
+          unless button.nil?
+            break
+          end
+        end
+      end
+
+      target = wait.until { button.find_element(name: 'commit') }
+
+      unless target.nil?
+        loop do
+          target = wait.until { button.find_element(name: 'commit') }
+          unless target.nil?
+            break
+          end
+        end
+      end
+
+
+      target.click
+
+      cart = get_button(wait, driver, 'cart')
+      unless cart.nil?
+        loop do
+          cart = get_button(wait, driver, 'cart')
+          unless cart.nil?
+            break
+          end
+        end
+      end
+
+      target = wait.until { cart.find_element(class: 'checkout') }
+      unless target.nil?
+        loop do
+          target = wait.until { cart.find_element(class: 'checkout') }
+          unless target.nil?
+            break
+          end
+        end
+      end
+
+      target.click
+
+      cart_body = wait.until { driver.find_element(id: 'cart-body') }
+      unless cart_body.nil?
+        loop do
+          cart_body = wait.until { driver.find_element(id: 'cart-body') }
+          unless cart_body.nil?
+            break
+          end
+        end
+      end
 
       #  姓
       cart_body.find_element(:id => 'credit_card_last_name').send_keys(order_information['姓'])
