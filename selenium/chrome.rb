@@ -1,51 +1,48 @@
 class Chrome
 
+  def access_website(driver)
+    driver.manage.timeouts.implicit_wait = 600
+    driver.navigate.to $URL
+  end
+
   def start(order_information)
      def end_selenium(msg)
       puts msg
       loop do
       end
      end
+
+    driver = Selenium::WebDriver.for :chrome
+
+    #  リトライ
     begin
-      #  アクセス処理
-      driver = Selenium::WebDriver.for :chrome
-      driver.manage.timeouts.implicit_wait = 1
-      driver.navigate.to $URL
+      access_website(driver)
+    rescue
+      access_website(driver)
+    end
+    driver.manage.timeouts.implicit_wait = 5
+
+    begin
       container = driver.find_element(:id => 'container')
       articles = container.find_elements(:tag_name => 'article')
       target_item = ''
       articles.each_with_index do |article, i|
         img = article.find_element(:class => 'inner-article').find_element(:tag_name => 'a').find_element(:tag_name => 'img')
-        img_name = img.attribute("src").split('/').last
+        img_name = img.attribute("alt")
         if img_name == order_information['画像名']
           target_item = img
           break
         end
       end
-      sleep 1
       target_item.click
 
-      details = driver.find_element(:id => 'details')
-      item_details = details.find_elements(:class => 'styles')[0].find_elements(:tag_name => 'li')
-      target_item = ''
-      item_details.each do |item|
-        target = item.find_element(:tag_name => 'a')
-        target_color = target.attribute("data-style-name")
-        if target_color == order_information['色']
-          target_item = target
-          break
-        end
-      end
-      sleep 1
-      target_item.click
-
-      sleep 1
+      # sleep 1
       driver.find_element(:id => 'add-remove-buttons').find_element(:name => 'commit').click
 
-      sleep 1
+      # sleep 1
       driver.find_element(:id => 'cart').find_element(:class => 'checkout').click
 
-      sleep 1
+      # sleep 1
       cart_body = driver.find_element(:id => 'cart-body')
 
       #  姓
@@ -97,7 +94,6 @@ class Chrome
       # 購入
       driver.find_element(:id => 'cart-footer').find_element(:name => 'commit').click
 
-      sleep 5
       end_selenium('BOT処理終了。購入手続きを手動で続けて下さい。')
     rescue
       end_selenium('システムエラー　この先の処理は手動で行って下さい。')
