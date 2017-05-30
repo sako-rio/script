@@ -28,11 +28,11 @@ class Chrome
   end
 
   def start(order_information, driver)
-     def end_selenium(msg)
+    def end_selenium(msg)
       puts msg
       loop do
       end
-     end
+    end
 
     #  リトライ
     begin
@@ -181,6 +181,8 @@ class Chrome
 
       # 購入
       driver.find_element(:id => 'cart-footer').find_element(:name => 'commit').click
+
+      driver.save_screenshot('/Users/sako/Desktop/filename.png')
 
       end_selenium('BOT処理終了。購入手続きを手動で続けて下さい。')
     rescue

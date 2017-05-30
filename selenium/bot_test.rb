@@ -12,6 +12,7 @@ if order_information['ブラウザ'] == 'firefox'
   firefox.start()
 else
   driver = Selenium::WebDriver.for :chrome
+  # phantomjs
   chrome = Chrome.new()
   chrome.start(order_information, driver)
 end
